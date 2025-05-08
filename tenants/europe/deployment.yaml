@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web
-  namespace: europe  # Assuming you have a europe namespace
+  namespace: europe
 spec:
   replicas: 1
   selector:
@@ -18,15 +18,15 @@ spec:
         image: mohamedaziz0801/simple-flask-login:v1
         ports:
         - containerPort: 5000
+        env:
+        - name: FLASK_APP
+          value: "run.py"
+        - name: FLASK_ENV
+          value: "development"
         envFrom:
         - secretRef:
             name: web-secrets
-        volumeMounts:
-        - name: app-volume
-          mountPath: /app
-      volumes:
-      - name: app-volume
-        emptyDir: {}
+        # Remove the volume mount since the app is already in /app in the image
 
 ---
 
@@ -54,4 +54,4 @@ type: Opaque
 stringData:
   .env: |
     SECRET_KEY=supersecretkey
-    DATABASE_URL=postgresql://postgres:postgres@db:5432/flask_db
+    DATABASE_URL=postgresql://postgres:postgres@postgres.shared-db.svc.cluster.local:5432/flask_db
