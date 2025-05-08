@@ -40,10 +40,11 @@ metadata:
   name: web
   namespace: europe
 spec:
-  type: NodePort  # Changed from LoadBalancer
+  type: NodePort
   ports:
   - port: 80
     targetPort: 5000
+    nodePort: 30080  # Manually assign NodePort (must be 30000-32767)
   selector:
     app: web
 
