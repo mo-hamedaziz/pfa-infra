@@ -23,10 +23,14 @@ spec:
           value: "run.py"
         - name: FLASK_ENV
           value: "development"
-        envFrom:
-        - secretRef:
-            name: web-secrets
-        # Remove the volume mount since the app is already in /app in the image
+        - name: DATABASE_URL
+          value: "postgresql://postgres:postgres@postgres.shared-db.svc.cluster.local:5432/flask_db"
+        - name: SECRET_KEY
+          value: "supersecretkey"
+        # envFrom:
+        # - secretRef:
+        #     name: web-secrets
+        # # Remove the volume mount since the app is already in /app in the image
 
 ---
 
@@ -43,15 +47,15 @@ spec:
   selector:
     app: web
 
----
+# ---
 
-apiVersion: v1
-kind: Secret
-metadata:
-  name: web-secrets
-  namespace: europe
-type: Opaque
-stringData:
-  .env: |
-    SECRET_KEY=supersecretkey
-    DATABASE_URL=postgresql://postgres:postgres@postgres.shared-db.svc.cluster.local:5432/flask_db
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: web-secrets
+#   namespace: europe
+# type: Opaque
+# stringData:
+#   .env: |
+#     SECRET_KEY=supersecretkey
+#     DATABASE_URL=postgresql://postgres:postgres@postgres.shared-db.svc.cluster.local:5432/flask_db
