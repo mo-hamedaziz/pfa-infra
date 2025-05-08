@@ -40,7 +40,7 @@ metadata:
   name: web
   namespace: europe
 spec:
-  type: LoadBalancer
+  type: NodePort  # Changed from LoadBalancer
   ports:
   - port: 80
     targetPort: 5000
