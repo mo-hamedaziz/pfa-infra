@@ -1,52 +1,43 @@
+global:
+  enabled: true
+
 server:
-  image:
-    repository: hashicorp/vault
-    tag: "1.12.0"
   ha:
     enabled: true
     raft:
       enabled: true
-
-  # Raft storage config; Vault handles data on its own volume
+      setNodeId: true
   dataStorage:
-    enabled: true
-    storageClass: ""
-    accessModes:
-      - ReadWriteOnce
     size: 10Gi
+  extraEnvironmentVars:
+    VAULT_API_ADDR: "http://localhost:8200"
+    VAULT_CLUSTER_ADDR: "http://localhost:8201"
 
-  # we disable TLS here for minikube; in prod you’d inject certs
+  extraVolumes:
+    - name: vault-init
+      configMap:
+        name: vault-init-script
+  extraVolumeMounts:
+    - name: vault-init
+      mountPath: /vault/userconfig
+      readOnly: true
+
+  postStart:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "/vault/userconfig/init.sh || true"
+
+  # Disable TLS for dev
   extraConfig: |
     listener "tcp" {
       address     = "0.0.0.0:8200"
       tls_disable = 1
     }
+
     storage "raft" {
-      path    = "/vault/data"
+      path = "/vault/data"
       node_id = "vault-0"
     }
 
-  # enable K8s‐based auto‐unseal + auto‐init
-  unsealConfig:
-    kubernetes:
-      secretShares: 1
-      secretThreshold: 1
-      serviceAccount:
-        create: false
-        name: vault-unsealer
-      # where to find its token
-      tokenPath: /var/run/secrets/kubernetes.io/serviceaccount/token
-
-  # mount the ServiceAccount token into Vault pods
-  server:
-    extraVolumes:
-      - name: vault-unsealer-token
-        projected:
-          sources:
-            - serviceAccountToken:
-                path: token
-                expirationSeconds: 3600
-    extraVolumeMounts:
-      - name: vault-unsealer-token
-        mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-        readOnly: true
+    ui = true
