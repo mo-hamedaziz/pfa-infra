@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+  namespace: vault
+spec:
+  template:
+    spec:
+      serviceAccountName: vault-init
+      restartPolicy: OnFailure
+      containers:
+        - name: vault-init
+          image: hashicorp/vault:1.15.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if vault status | grep -q 'Initialized.*false'; then
+                INIT=$(vault operator init -format=json -key-shares=1 -key-threshold=1)
+                echo "$INIT" | tee /tmp/init.json
+                UNSEAL_KEY=$(echo "$INIT" | jq -r '.unseal_keys_b64[0]')
+                ROOT_TOKEN=$(echo "$INIT" | jq -r '.root_token')
+
+                kubectl create secret generic vault-init-keys \
+                  --from-literal=unseal-key=$UNSEAL_KEY \
+                  --from-literal=root-token=$ROOT_TOKEN \
+                  -n vault
+                vault operator unseal "$UNSEAL_KEY"
+              fi
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault.vault.svc:8200"
