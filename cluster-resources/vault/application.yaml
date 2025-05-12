@@ -5,20 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
+  # This directory now contains our Namespace + kustomization + values
   source:
     repoURL: https://github.com/mo-hamedaziz/pfa-infra.git
-    path: cluster-resources/vault
     targetRevision: main
-    helm:
-      releaseName: vault
-      values: |
-        server:
-          enabled: true
-          dev:
-            enabled: true
+    path: cluster-resources/vault
+
   destination:
     server: https://kubernetes.default.svc
     namespace: vault
+
   syncPolicy:
     automated:
       prune: true

@@ -1,21 +1,12 @@
-# Default values for HashiCorp Vault
-# This is a minimal configuration for development
-global:
-  enabled: true
-  tlsDisable: true
-
+# Basic values for a single-node Vault (adjust for HA if you need it)
 server:
-  enabled: true
-  dev:
-    enabled: true
-  standalone:
-    enabled: true
-  auditStorage:
-    enabled: false
-  dataStorage:
-    enabled: false
+  # DEV-only: static root token (remove for prod!)
+  extraArgs:
+    - "-dev-root-token-id=root"
   ha:
     enabled: false
-  service:
-    enabled: true
-    type: ClusterIP
+
+# Store data on a PersistentVolume
+dataStorage:
+  enabled: true
+  size: 1Gi

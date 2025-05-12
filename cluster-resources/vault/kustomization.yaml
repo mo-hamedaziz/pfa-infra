@@ -1,5 +1,16 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
+# Create namespace first
 resources:
   - namespace.yaml
-  - vault-app.yaml
+
+# Pull in the official HashiCorp Vault Helm chart
+helmCharts:
+  - name: vault
+    chart: vault
+    version: "0.22.1"
+    repo: https://helm.releases.hashicorp.com
+    releaseName: vault
+    namespace: vault
+    valuesFile: values.yaml
