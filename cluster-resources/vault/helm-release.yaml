@@ -4,21 +4,19 @@ metadata:
   name: vault
   namespace: argocd
 spec:
+  destination:
+    namespace: vault
+    server: https://kubernetes.default.svc
   project: default
   source:
     repoURL: https://helm.releases.hashicorp.com
     chart: vault
     targetRevision: 0.27.0
     helm:
-      values: |
-        # This is read from `values.yaml` below
-        # or specify inline here
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: vault
+      valueFiles:
+        - values.yaml
+    path: cluster-resources/vault
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true

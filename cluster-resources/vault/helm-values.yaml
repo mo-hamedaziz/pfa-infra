@@ -1,0 +1,28 @@
+server:
+  ha:
+    enabled: false
+  dataStorage:
+    enabled: true
+    size: 1Gi
+  standalone:
+    enabled: true
+    config: |
+      ui = true
+
+      listener "tcp" {
+        address     = "0.0.0.0:8200"
+        tls_disable = 1
+      }
+
+      storage "file" {
+        path = "/vault/data"
+      }
+
+      service_registration "kubernetes" {}
+
+  extraEnvironmentVars:
+    VAULT_LOCAL_CONFIG: ""
+    SKIP_SETCAP: "true"
+
+injector:
+  enabled: false

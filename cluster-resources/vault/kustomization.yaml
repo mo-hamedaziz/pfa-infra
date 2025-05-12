@@ -1,3 +1,4 @@
 resources:
-  - namespace.yaml
+  - vault-namespace.yaml
   - helm-release.yaml
+  - vault-init-job.yaml
