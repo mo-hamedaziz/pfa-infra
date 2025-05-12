@@ -1,2 +1,3 @@
 resources:
   - cluster-resources/vault
+  # … plus any other cluster-wide apps you’re bootstrapping

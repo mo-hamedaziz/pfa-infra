@@ -1,0 +1,3 @@
+resources:
+  - vault-app.yaml
+  - values.yaml     # optional, kustomize won’t break if omitted

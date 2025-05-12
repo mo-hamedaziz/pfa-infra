@@ -5,17 +5,20 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
+  # ← no "path:" or "directory:" here!
   source:
     repoURL: https://github.com/mo-hamedaziz/pfa-infra.git
-    path: cluster-resources/vault
     targetRevision: HEAD
     helm:
       chart: vault
       repoURL: https://helm.releases.hashicorp.com
       valuesFile: values.yaml
+
   destination:
     server: https://kubernetes.default.svc
     namespace: vault
+
   syncPolicy:
     automated:
       prune: true
