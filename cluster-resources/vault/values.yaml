@@ -1,10 +1,12 @@
-# /home/pfa/pfa-infra/cluster-resources/vault/values.yaml
 server:
   dev:
     enabled: true
+
 ui:
   enabled: true
+
 injector:
   enabled: false
+
 service:
   type: ClusterIP
