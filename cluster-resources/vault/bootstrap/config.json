@@ -1,0 +1,7 @@
+{
+    "secret_shares": 5,
+    "secret_threshold": 3,
+    "recovery_shares": 5,
+    "recovery_threshold": 3,
+    "stored_shares": 1
+  }
