@@ -1,3 +1,2 @@
 resources:
   - vault-app.yaml
-  - values.yaml
