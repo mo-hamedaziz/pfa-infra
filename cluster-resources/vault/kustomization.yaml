@@ -1,4 +1,0 @@
-resources:
-  - https://helm.releases.hashicorp.com/vault
-  - helm-values.yaml
-  - k8s-init-job.yaml
