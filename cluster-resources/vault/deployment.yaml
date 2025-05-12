@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault
+  namespace: vault
+  labels:
+    app: vault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+        - name: vault
+          image: hashicorp/vault:1.13.0
+          args:
+            - "server"
+            - "-dev"
+            - "-dev-listen-address=0.0.0.0:8200"
+          ports:
+            - containerPort: 8200
+          env:
+            # this is the root token for dev mode; DO NOT use in production
+            - name: VAULT_DEV_ROOT_TOKEN_ID
+              value: "root"
