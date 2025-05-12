@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+  namespace: vault
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: vault-init
+        image: vault:latest
+        command: ["sh", "-c"]
+        args:
+        - |
+          until nc -z vault-0.vault-internal 8200; do
+            echo "Waiting for Vault to be ready..."
+            sleep 5
+          done
+          vault operator init -key-shares=1 -key-threshold=1 -format=json > /tmp/vault-init.json
+          # Store the keys and token somewhere secure (like Kubernetes Secrets)
+        volumeMounts:
+        - name: vault-tls
+          mountPath: /vault/tls
+          readOnly: true
+      volumes:
+      - name: vault-tls
+        secret:
+          secretName: vault-tls
