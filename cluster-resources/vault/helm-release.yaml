@@ -1,29 +1,29 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
-  name: vault
-  namespace: vault
+  name: vault-helm
+  namespace: argocd
 spec:
-  chart:
-    spec:
-      chart: vault
-      version: 0.27.0  # Use the latest stable version
-      sourceRef:
-        kind: HelmRepository
-        name: hashicorp
-        namespace: vault
-  interval: 5m
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-  values:
-    server:
-      dev:
-        enabled: true  # For development only - disable in production
-      ha:
-        enabled: false  # Disable HA for minikube
-    injector:
-      enabled: false   # Disable agent injector for simplicity
+  project: default
+  source:
+    chart: vault
+    repoURL: https://helm.releases.hashicorp.com
+    targetRevision: 0.27.0
+    helm:
+      values: |
+        server:
+          dev:
+            enabled: true
+          ha:
+            enabled: false
+        injector:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
