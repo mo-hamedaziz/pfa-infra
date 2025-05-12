@@ -1,0 +1,83 @@
+server:
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: true
+  dataStorage:
+    size: 1Gi
+  extraEnvironmentVars:
+    VAULT_LOG_LEVEL: debug
+
+  # Vault will run in a pod and communicate with k8s for auto-unseal
+  standalone:
+    enabled: false
+
+  affinity: {}
+
+  # Enable the service account that the Vault job will use
+  serviceAccount:
+    create: true
+    name: vault
+
+  # Enables the injector to support Vault Agent sidecar
+  injector:
+    enabled: true
+
+  # Start Vault in dev mode = false
+  dev:
+    enabled: false
+
+  readinessProbe:
+    enabled: true
+
+  startupProbe:
+    enabled: true
+
+  livenessProbe:
+    enabled: true
+
+  volumes:
+    - name: config
+      configMap:
+        name: vault-config
+
+  volumeMounts:
+    - name: config
+      mountPath: /vault/config
+
+  extraArgs:
+    - "-config=/vault/config/config.hcl"
+
+  # Auto-unseal via Kubernetes
+  enterpriseLicense:
+    enabled: false
+
+injector:
+  enabled: true
+
+ui:
+  enabled: true
+
+# Vault Configuration
+# Custom init job to automate initialization
+initContainers:
+  - name: vault-init
+    image: hashicorp/vault:1.15.4
+    command:
+      - /bin/sh
+      - -c
+      - |
+        VAULT_ADDR='http://127.0.0.1:8200'
+        if vault status | grep 'Initialized.*true'; then
+          echo "Vault already initialized"
+          exit 0
+        fi
+        INIT_JSON=$(vault operator init -key-shares=1 -key-threshold=1 -format=json)
+        echo "$INIT_JSON" | jq -r '.unseal_keys_b64[0]' > /tmp/unseal.key
+        echo "$INIT_JSON" | jq -r '.root_token' > /tmp/root.token
+        kubectl create secret generic vault-init-creds --from-file=/tmp/unseal.key --from-file=/tmp/root.token -n vault
+    volumeMounts:
+      - name: config
+        mountPath: /vault/config
