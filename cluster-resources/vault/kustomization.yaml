@@ -1,4 +1,4 @@
 resources:
-  - vault-namespace.yaml
-  - helm-release.yaml
-  - vault-init-job.yaml
+  - https://helm.releases.hashicorp.com/vault
+  - helm-values.yaml
+  - k8s-init-job.yaml

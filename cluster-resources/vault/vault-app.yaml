@@ -9,14 +9,12 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    repoURL: https://helm.releases.hashicorp.com
-    chart: vault
-    targetRevision: 0.27.0
-    helm:
-      valueFiles:
-        - values.yaml
     path: cluster-resources/vault
+    repoURL: https://github.com/mo-hamedaziz/pfa-infra.git
+    targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
