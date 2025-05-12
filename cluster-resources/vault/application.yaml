@@ -1,23 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vault-helm
+  name: vault
   namespace: argocd
 spec:
   project: default
   source:
-    chart: vault
-    repoURL: https://helm.releases.hashicorp.com
-    targetRevision: 0.27.0
+    repoURL: https://github.com/mo-hamedaziz/pfa-infra.git
+    path: cluster-resources/vault
+    targetRevision: HEAD
     helm:
+      releaseName: vault
       values: |
         server:
+          enabled: true
           dev:
             enabled: true
-          ha:
-            enabled: false
-        injector:
-          enabled: false
+        ui:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: vault
@@ -26,4 +26,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
