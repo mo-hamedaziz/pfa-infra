@@ -1,0 +1,6 @@
+server:
+  ha: false
+  dev:
+    enabled: true
+  ui:
+    enabled: true

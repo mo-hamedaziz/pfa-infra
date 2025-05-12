@@ -1,23 +1,83 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: vault
   namespace: vault
 spec:
-  project: default
-  source:
-    repoURL: https://helm.releases.hashicorp.com
-    chart: vault
-    targetRevision: 0.27.0
-    helm:
-      valueFiles:
-        - values/helm-values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: vault
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+        - name: vault
+          image: hashicorp/vault:latest
+          ports:
+            - containerPort: 8200
+          volumeMounts:
+            - name: vault-config
+              mountPath: /vault/config
+              subPath: config.hcl
+      volumes:
+        - name: vault-config
+          configMap:
+            name: vault-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: vault
+data:
+  config.hcl: |
+    ui = true
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      cluster_address = "0.0.0.0:8201"
+      tls_disable = 1
+    }
+    storage "consul" {
+      address = "localhost:8500"
+      path = "vault/"
+    }
+    seal "awskms" {
+      region = "us-east-1"
+      kms_key_id = "your-kms-key-id"
+    }
+    disable_mlock = true
+    default_lease_ttl = "1h"
+    max_lease_ttl = "24h"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vault
+  namespace: vault
+spec:
+  serviceName: "vault"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+        - name: vault
+          image: hashicorp/vault:latest
+          ports:
+            - containerPort: 8200
+          volumeMounts:
+            - name: vault-config
+              mountPath: /vault/config
+              subPath: config.hcl
+      volumes:
+        - name: vault-config
+          configMap:
+            name: vault-config
