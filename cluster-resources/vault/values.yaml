@@ -1,32 +1,12 @@
-# Default values for vault.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-global:
-  enabled: true
-  tlsDisable: true
-
 server:
-  enabled: true
-  # Run Vault in dev mode for development
   dev:
     enabled: true
-  
-  # Enable the Vault WebUI
-  ui:
-    enabled: true
-    serviceType: NodePort
-    externalPort: 8200
 
-  # Configure Vault to use a PVC for storage
-  # dataStorage:
-  #   enabled: true
-  #   size: 10Gi
-
-  # HA configuration (disabled for minikube)
-  ha:
-    enabled: false
-
-# Configure Vault injector (agent sidecar)
-injector:
+ui:
   enabled: true
+
+injector:
+  enabled: false
+
+service:
+  type: ClusterIP

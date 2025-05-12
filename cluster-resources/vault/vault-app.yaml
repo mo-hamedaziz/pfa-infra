@@ -10,14 +10,9 @@ spec:
     path: cluster-resources/vault
     targetRevision: HEAD
     helm:
-      releaseName: vault
-      values: |
-        server:
-          enabled: true
-          dev:
-            enabled: true
-        ui:
-          enabled: true
+      chart: vault
+      repoURL: https://helm.releases.hashicorp.com
+      valuesFile: values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: vault
