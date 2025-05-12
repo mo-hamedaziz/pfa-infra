@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/mo-hamedaziz/pfa-infra.git"
-    targetRevision: HEAD
+    targetRevision: main
     path: cluster-resources/vault
     chart: vault
     helm:
