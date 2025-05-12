@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd           # your Argo CD installation namespace
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/mo-hamedaziz/pfa-infra.git"
+    targetRevision: HEAD
+    path: cluster-resources/vault
+    chart: vault
+    helm:
+      repoURL: https://helm.releases.hashicorp.com
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
