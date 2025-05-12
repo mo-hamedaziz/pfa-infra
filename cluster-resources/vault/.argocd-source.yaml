@@ -1,3 +1,0 @@
-directory:
-  recurse: true
-  exclude: "init/.*"

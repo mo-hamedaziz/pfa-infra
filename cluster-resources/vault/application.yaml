@@ -2,16 +2,14 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: vault
-  namespace: argocd           # your Argo CD installation namespace
+  namespace: argocd
 spec:
   project: default
   source:
-    repoURL: "https://github.com/mo-hamedaziz/pfa-infra.git"
-    targetRevision: main
-    path: cluster-resources/vault
+    repoURL: https://helm.releases.hashicorp.com
     chart: vault
+    targetRevision: 0.27.0        # or latest version
     helm:
-      repoURL: https://helm.releases.hashicorp.com
       valueFiles:
         - values.yaml
   destination:
@@ -21,3 +19,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
