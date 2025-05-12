@@ -1,0 +1,21 @@
+# Default values for HashiCorp Vault
+# This is a minimal configuration for development
+global:
+  enabled: true
+  tlsDisable: true
+
+server:
+  enabled: true
+  dev:
+    enabled: true
+  standalone:
+    enabled: true
+  auditStorage:
+    enabled: false
+  dataStorage:
+    enabled: false
+  ha:
+    enabled: false
+  service:
+    enabled: true
+    type: ClusterIP
