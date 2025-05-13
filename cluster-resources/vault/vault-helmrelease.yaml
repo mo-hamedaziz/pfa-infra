@@ -12,22 +12,38 @@ spec:
     helm:
       releaseName: vault
       parameters:
+        # Disable dev mode
         - name: "server.dev.enabled"
-          value: "true" # for development testing
+          value: "false"
+
+        # Enable integrated storage (Raft)
+        - name: "server.ha.enabled"
+          value: "true"
+        - name: "server.ha.raft.enabled"
+          value: "true"
+
+        # Persistent volume claim settings
+        - name: "server.dataStorage.enabled"
+          value: "true"
+        - name: "server.dataStorage.storageClass"
+          value: "standard"
+        - name: "server.dataStorage.size"
+          value: "10Gi"
+
   destination:
     server: https://kubernetes.default.svc
     namespace: vault
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  
+
   ignoreDifferences:
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
       name: vault-agent-injector-cfg
-      # ignore just the CA bundle JSON pointer
       jsonPointers:
         - /webhooks/0/clientConfig/caBundle
