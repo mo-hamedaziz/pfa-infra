@@ -29,8 +29,6 @@ spec:
           value: "standard"
         - name: "server.dataStorage.size"
           value: "10Gi"
-      valueFiles:
-        - values-vault.yaml
 
   destination:
     server: https://kubernetes.default.svc
